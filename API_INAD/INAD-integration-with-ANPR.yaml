@@ -1,0 +1,289 @@
+openapi: 3.0.1
+
+info:
+  title: INAD-integration-with-ANPR
+  description: "API rese disponibili da INAD per **integrazione** con ANPR."
+  version: 1.0.0
+
+servers:
+- url: https://xxxxxx/INADIntegrationANPR/rest/v1.0.0
+
+tags:
+- name: utility
+
+paths:
+  /sync_digital_addresses/{referenceDate}:
+    get:
+      tags:
+        - utility
+
+      description: Recupera i domicili digitali risultanti alla data indicata
+
+      parameters:
+        - name: referenceDate
+          in: path
+          description: data di riferimento del recupero richiesto
+          required: true
+          schema:
+            type: string      
+            format: date
+
+      responses:
+        200:
+          description: OK
+          content:
+            multipart/form-data:
+              schema:
+                $ref: '#/components/schemas/syncResponse'
+
+        400:
+          description: "BAD REQUEST"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+        401:
+          description: "UNAUTHORIZED"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+        404:
+          description: "NOT FOUND"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      
+        default:
+          description: Gli HTTP state codes non indicati hanno un comportamento conforme alle indicazioni riportate in https://httpstatuses.com/
+          content: {}
+
+   
+  /death_notification/{cf}/{eventDate}:
+    post:
+      tags:
+        - utility
+
+      description: Ricevi notifica l'evento di morte di un cittadino
+
+      parameters:
+        - name: cf
+          in: path
+          description: codice fiscale del cittadino deceduto
+          required: true
+          schema:
+            $ref: '#/components/schemas/cf'
+
+        - name: eventDate
+          in: path
+          description: data dell'evento di decesso
+          required: true
+          schema:
+            type: string      
+            format: date
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ack'
+
+        400:
+          description: "BAD REQUEST"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+        401:
+          description: "UNAUTHORIZED"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+       
+        default:
+          description: Gli HTTP state codes non indicati hanno un comportamento conforme alle indicazioni riportate in https://httpstatuses.com/
+          content: {}
+  
+  /required_notification:
+    post:
+      tags:
+        - utility
+
+      description: Ricevi notifica l'evento di morte di un cittadino
+
+      requestBody:
+        description: Azione richiesta dal cittadino
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/requiredNotification'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ack'
+
+        400:
+          description: "BAD REQUEST"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+        401:
+          description: "UNAUTHORIZED"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+       
+        default:
+          description: Gli HTTP state codes non indicati hanno un comportamento conforme alle indicazioni riportate in https://httpstatuses.com/
+          content: {}
+components:
+  schemas:
+    cf: 
+      type: string
+      pattern: /^(?:[A-Z][AEIOU][AEIOUX]|[B-DF-HJ-NP-TV-Z]{2}[A-Z]){2}(?:[\dLMNP-V]{2}(?:[A-EHLMPR-T](?:[04LQ][1-9MNP-V]|[15MR][\dLMNP-V]|[26NS][0-8LMNP-U])|[DHPS][37PT][0L]|[ACELMRT][37PT][01LM]|[AC-EHLMPR-T][26NS][9V])|(?:[02468LNQSU][048LQU]|[13579MPRTV][26NS])B[26NS][9V])(?:[A-MZ][1-9MNP-V][\dLMNP-V]{2}|[A-M][0L](?:[1-9MNP-V][\dLMNP-V]|[0L][1-9MNP-V]))[A-Z]$/i
+
+      example:
+        MROGMR04A13A662X
+
+    digitalAddress: 
+      type: string
+      pattern: ^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$
+
+      example:
+        gianmaria.mora@pec.it
+
+    ack:
+      type: string
+      pattern: ^OK
+
+    personDigitalAddresses:
+      type: array
+      items: 
+        type: object
+        required:
+          - cf
+          - digitalAddress
+        properties:
+          cf:
+            $ref: '#/components/schemas/cf'
+          digitalAddress:
+            $ref: '#/components/schemas/digitalAddress'
+
+      example:
+        {
+          cf: MROGMR04A13A662X,
+          digitalAddress: gianmaria.mora@pec.it
+        }          
+               
+
+    syncResponse:
+      required:
+        - referenceDate
+        - personDigitalAddresses
+      
+      type: object
+
+      properties:
+        referenceDate:
+          description: data di riferimento del recupero fornito
+          type: string      
+          format: date
+
+        personDigitalAddresses:
+          description: domicili digitali dei cittadini
+          $ref: '#/components/schemas/personDigitalAddresses'          
+        
+      example:
+        referenceDate: 2022-01-13
+        personDigitalAddresses: [
+          {MROGMR04A13A662X,gianmaria.mora@pec.it},
+          {CSTLRT08B54A944C,alberta.castellano@pec.it}        
+        ]
+
+    requiredNotification:
+      required:
+        - referenceDate
+        - cf
+        - action
+
+      type: object
+
+      properties:
+        referenceDate:
+          description: data dell'azione richiesta dal cittadino
+          type: string      
+          format: date
+
+        cf:
+          description: cittadino che ha richiesto l'azione
+          $ref: '#/components/schemas/cf'
+
+        digitalAddress:
+          description: domicilio digitale eletto dal cittadino
+          $ref: '#/components/schemas/digitalAddress'
+
+        action:
+          description: azione richiesta dal cittadino
+          type: string
+          enum: [ELEZIONE, MODIFICA, CANCELLAZIONE_VOLONTARIA]
+
+      example:
+        {
+         referenceDate: 2022-05-05,
+         cf: MROGMR04A13A662X,
+         digitalAddress: gianmaria.mora@pec.it,
+         action: MODIFICA,
+        }
+
+ 
+    Error:
+      required:
+      - timestamp
+      - status
+      - error
+      - message
+      - path
+      type: object
+      properties:
+        timestamp:
+          type: string
+          description: timestamp dell'errore
+          format: date-time
+        status:
+          maximum: 600
+          minimum: 100
+          type: integer
+          description: HTTP status code generato per l'errore verificatosi
+          format: int32        
+        error:
+          type: string
+          description: Tipologia dell'errore verificatosi
+        message:
+          type: string
+          description: Messaggio specifico per errore verificatosi
+        path:
+          type: string
+          description: Riferimento al path per cui si è verificato l'errore  
+        
+      example:
+        timestamp: 2020-05-05T10:55:18.383+0000
+        status: 400
+        error: BAD REQUEST
+        message: Parametro assente
+        path: /sync_digital_addresses
+

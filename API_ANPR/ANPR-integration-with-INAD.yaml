@@ -1,0 +1,172 @@
+openapi: 3.0.1
+
+info:
+  title: ANPR-integration-with-INAD
+  description: "API rese disponibili da ANPR per integrazione con INAD."
+  version: 1.0.0
+
+servers:
+- url: https://xxxxxx/ANPRIntegrationINAD/rest/v1.0.0
+
+tags:
+- name: utility
+
+paths:
+  /changed_digital_addresses:
+    post:
+      tags:
+        - utility
+
+      description: Ricevi notifica delle variazioni intervenute nelle ultime 24h 
+
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/changedDigitalAddresses'
+            
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ack'
+
+        400:
+          description: "BAD REQUEST"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+        401:
+          description: "UNAUTHORIZED"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+       
+        default:
+          description: Gli HTTP state codes non indicati hanno un comportamento conforme alle indicazioni riportate in https://httpstatuses.com/
+          content: {}
+
+
+components:
+  schemas:
+    ack:
+      type: string
+      pattern: ^OK
+
+    cf: 
+      type: string
+      pattern: /^(?:[A-Z][AEIOU][AEIOUX]|[B-DF-HJ-NP-TV-Z]{2}[A-Z]){2}(?:[\dLMNP-V]{2}(?:[A-EHLMPR-T](?:[04LQ][1-9MNP-V]|[15MR][\dLMNP-V]|[26NS][0-8LMNP-U])|[DHPS][37PT][0L]|[ACELMRT][37PT][01LM]|[AC-EHLMPR-T][26NS][9V])|(?:[02468LNQSU][048LQU]|[13579MPRTV][26NS])B[26NS][9V])(?:[A-MZ][1-9MNP-V][\dLMNP-V]{2}|[A-M][0L](?:[1-9MNP-V][\dLMNP-V]|[0L][1-9MNP-V]))[A-Z]$/i
+
+    digitalAddress: 
+      type: string
+      pattern: ^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$
+
+    personDigitalAddresses:
+          type: array
+          items: 
+            type: object
+            required:
+              - cf
+              - digitalAddress
+            properties:
+              cf:
+                $ref: '#/components/schemas/cf'
+              digitalAddress:
+                $ref: '#/components/schemas/digitalAddress'
+
+    action:
+          description: azione richiesta dal cittadino
+          type: string
+          enum: [INSERIT, DELETE, MODIFY]
+
+    digitalAddressesChanged:
+      type: array
+      items:
+        type: object
+        required:
+          - action
+          - personDigitalAddresses
+
+        properties:
+          action:
+            description: azione richiesta (interito/cancellato/modificato)
+            $ref: '#/components/schemas/digitalAddressesChanged' 
+
+          personDigitalAddresses:
+            description: domicilio digitale di un cittadino interito/cancellato/modificato
+            $ref: '#/components/schemas/personDigitalAddresses' 
+
+      example:
+        [
+          {DELETE, {MROGMR04A13A662X,gianmaria.mora@pec.it}},
+          {MODIFY, {CSTLRT08B54A944C,alberta.castellano@pec.it}},
+          {INSERT, {RSSMRA93A01A001G,mario.rossi@pec.it}}        
+        ]
+
+    changedDigitalAddresses:
+      required:
+        - referenceDate
+        - digitalAddressesChanged
+      
+      type: object
+
+      properties:
+        referenceDate:
+          description: data di riferimento del recupero fornito
+          type: string      
+          format: date
+
+        digitalAddressesChanged:
+          description: modifica dei domicili digitali delle ultime 24h
+          $ref: '#/components/schemas/digitalAddressesChanged'          
+        
+      example:
+        referenceDate: 2022-01-13
+        digitalAddresses: [
+          {DELETE, {MROGMR04A13A662X,gianmaria.mora@pec.it}},
+          {MODIFY, {CSTLRT08B54A944C,alberta.castellano@pec.it}},
+          {INSERT, {RSSMRA93A01A001G,mario.rossi@pec.it}}        
+        ]
+
+
+    Error:
+      required:
+      - timestamp
+      - status
+      - error
+      - message
+      - path
+      type: object
+      properties:
+        timestamp:
+          type: string
+          description: timestamp dell'errore
+          format: date-time
+        status:
+          maximum: 600
+          minimum: 100
+          type: integer
+          description: HTTP status code generato per l'errore verificatosi
+          format: int32        
+        error:
+          type: string
+          description: Tipologia dell'errore verificatosi
+        message:
+          type: string
+          description: Messaggio specifico per errore verificatosi
+        path:
+          type: string
+          description: Riferimento al path per cui si è verificato l'errore  
+        
+      example:
+        timestamp: 2020-05-05T10:55:18.383+0000
+        status: 400
+        error: BAD REQUEST
+        message: Parametro assente
+        path: /changed_digital_addresses
+    

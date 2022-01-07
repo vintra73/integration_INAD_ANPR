@@ -32,7 +32,7 @@ paths:
         200:
           description: OK
           content:
-            multipart/form-data:
+            application/json:
               schema:
                 $ref: '#/components/schemas/syncResponse'
 

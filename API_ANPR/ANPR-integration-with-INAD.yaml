@@ -21,7 +21,7 @@ paths:
 
       requestBody:
         content:
-          multipart/form-data:
+          application/json:
             schema:
               $ref: '#/components/schemas/changedDigitalAddresses'
             
@@ -95,7 +95,7 @@ components:
         properties:
           action:
             description: azione richiesta (interito/cancellato/modificato)
-            $ref: '#/components/schemas/digitalAddressesChanged' 
+            $ref: '#/components/schemas/action' 
 
           personDigitalAddresses:
             description: domicilio digitale di un cittadino interito/cancellato/modificato

@@ -13,6 +13,61 @@ tags:
 
 paths:
   /sync_digital_addresses/{referenceDate}:
+    head:
+      tags:
+        - utility
+
+      description: Recupera disponibili a implemenare single part ranges HTTP range requests e dimensione della risorsa
+
+      parameters:
+        - name: referenceDate
+          in: path
+          description: data di riferimento del recupero richiesto
+          required: true
+          schema:
+            type: string      
+            format: date
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ack'
+          headers:
+            Accept-Ranges:
+              schema:
+                type: string
+                pattern: ^bytes$
+            Content-Length:
+              schema:
+                type: integer
+        
+        400:
+          description: "BAD REQUEST"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+        401:
+          description: "UNAUTHORIZED"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+        404:
+          description: "NOT FOUND"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      
+        default:
+          description: Gli HTTP state codes non indicati hanno un comportamento conforme alle indicazioni riportate in https://httpstatuses.com/
+          content: {}
+      
     get:
       tags:
         - utility
@@ -84,6 +139,61 @@ paths:
           content: {}
 
   /changed_digital_addresses/{referenceDate}:
+    head:
+      tags:
+        - utility
+
+      description: Recupera disponibili a implemenare single part ranges HTTP range requests e dimensione della risorsa
+
+      parameters:
+        - name: referenceDate
+          in: path
+          description: data di riferimento del recupero richiesto
+          required: true
+          schema:
+            type: string      
+            format: date
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ack'
+          headers:
+            Accept-Ranges:
+              schema:
+                type: string
+                pattern: ^bytes$
+            Content-Length:
+              schema:
+                type: integer
+        
+        400:
+          description: "BAD REQUEST"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+        401:
+          description: "UNAUTHORIZED"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+        404:
+          description: "NOT FOUND"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      
+        default:
+          description: Gli HTTP state codes non indicati hanno un comportamento conforme alle indicazioni riportate in https://httpstatuses.com/
+          content: {}
+          
     get:
       tags: 
         - utility

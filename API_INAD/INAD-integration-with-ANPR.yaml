@@ -57,10 +57,7 @@ paths:
             Content-Length:
               schema:
                 type: integer
-            Transfer-Encoding:
-              schema:
-                type: string
-                pattern: ^(compress, |deflate, |gzip, )?chunked$
+        
         400:
           description: "BAD REQUEST"
           content:
@@ -130,11 +127,7 @@ paths:
                 pattern: ^bytes (\d+-\d+\/(\*|\d+))|(\*\/\d+)$
             Content-Length:
               schema:
-                type: integer
-            Transfer-Encoding:
-              schema:
-                type: string
-                pattern: ^(compress, |deflate, |gzip, )?chunked$          
+                type: integer        
 
         400:
           description: "BAD REQUEST"

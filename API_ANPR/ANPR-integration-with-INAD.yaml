@@ -12,22 +12,23 @@ tags:
 - name: utility
 
 paths:
-  /changed_digital_addresses:
+  /event_changed_digital_addresses:
     post:
       tags:
         - utility
 
-      description: Ricevi notifica delle variazioni intervenute nelle ultime 24h 
+      description: Ricevi evento delle variazioni intervenute nelle ultime 24h 
 
       requestBody:
         content:
-          multipart/form-data:
+          application/json:
             schema:
-              $ref: '#/components/schemas/changedDigitalAddresses'
+              $ref: '#/components/schemas/eventChangedDigitalAddresses'
             
       responses:
         200:
           description: OK
+                        
           content:
             application/json:
               schema:
@@ -56,7 +57,7 @@ components:
   schemas:
     ack:
       type: string
-      pattern: ^OK
+      pattern: ^OK$
 
     cf: 
       type: string
@@ -78,61 +79,28 @@ components:
                 $ref: '#/components/schemas/cf'
               digitalAddress:
                 $ref: '#/components/schemas/digitalAddress'
-
-    action:
-          description: azione richiesta dal cittadino
-          type: string
-          enum: [INSERIT, DELETE, MODIFY]
-
-    digitalAddressesChanged:
-      type: array
-      items:
-        type: object
-        required:
-          - action
-          - personDigitalAddresses
-
-        properties:
-          action:
-            description: azione richiesta (interito/cancellato/modificato)
-            $ref: '#/components/schemas/digitalAddressesChanged' 
-
-          personDigitalAddresses:
-            description: domicilio digitale di un cittadino interito/cancellato/modificato
-            $ref: '#/components/schemas/personDigitalAddresses' 
-
-      example:
-        [
-          {DELETE, {MROGMR04A13A662X,gianmaria.mora@pec.it}},
-          {MODIFY, {CSTLRT08B54A944C,alberta.castellano@pec.it}},
-          {INSERT, {RSSMRA93A01A001G,mario.rossi@pec.it}}        
-        ]
-
-    changedDigitalAddresses:
-      required:
+    
+    eventChangedDigitalAddresses:
+      required: 
         - referenceDate
-        - digitalAddressesChanged
-      
+        - resource
+
       type: object
 
       properties:
         referenceDate:
-          description: data di riferimento del recupero fornito
+          description: data di riferimento dell'evento delle variazioni intervenute nelle ultime 24h 
           type: string      
           format: date
 
-        digitalAddressesChanged:
-          description: modifica dei domicili digitali delle ultime 24h
-          $ref: '#/components/schemas/digitalAddressesChanged'          
-        
+        resource:
+          description: riferimento alla resource da recuperare
+          type: string
+          format: uri
+
       example:
         referenceDate: 2022-01-13
-        digitalAddresses: [
-          {DELETE, {MROGMR04A13A662X,gianmaria.mora@pec.it}},
-          {MODIFY, {CSTLRT08B54A944C,alberta.castellano@pec.it}},
-          {INSERT, {RSSMRA93A01A001G,mario.rossi@pec.it}}        
-        ]
-
+        resource:  changed_digital_addresses/2022-01-13
 
     Error:
       required:

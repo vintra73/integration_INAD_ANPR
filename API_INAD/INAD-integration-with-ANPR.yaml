@@ -222,14 +222,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/digitalAddressesChanged'
+                $ref: '#/components/schemas/changedDigitalAddresses'
           
         206:
           description: "PARTIAL CONTENT"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/digitalAddressesChanged'
+                $ref: '#/components/schemas/changedDigitalAddresses'
           headers:
             Content-Range:
               schema:  

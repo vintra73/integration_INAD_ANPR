@@ -222,14 +222,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/syncResponse'
+                $ref: '#/components/schemas/digitalAddressesChanged'
           
         206:
           description: "PARTIAL CONTENT"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/syncResponse'
+                $ref: '#/components/schemas/digitalAddressesChanged'
           headers:
             Content-Range:
               schema:  

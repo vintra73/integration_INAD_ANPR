@@ -57,7 +57,10 @@ components:
   schemas:
     ack:
       type: string
-      pattern: ^OK$
+      pattern: ^RECEIVED_REQUEST$
+
+      example:
+        RECEIVED_REQUEST
      
     eventChangedDigitalAddresses:
       required: 

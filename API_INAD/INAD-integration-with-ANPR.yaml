@@ -353,6 +353,7 @@ paths:
         default:
           description: Gli HTTP state codes non indicati hanno un comportamento conforme alle indicazioni riportate in https://httpstatuses.com/
           content: {}
+
 components:
   schemas:
     cf: 
@@ -371,7 +372,10 @@ components:
 
     ack:
       type: string
-      pattern: ^OK$
+      pattern: ^RECEIVED_REQUEST$
+
+      example:
+        RECEIVED_REQUEST
 
     personDigitalAddresses:
       type: array
@@ -391,7 +395,7 @@ components:
           cf: MROGMR04A13A662X,
           digitalAddress: gianmaria.mora@pec.it
         }          
-               
+
 
     syncResponse:
       required:
@@ -421,6 +425,9 @@ components:
       description: azione richiesta dal cittadino
       type: string
       enum: [INSERT, DELETE, MODIFY]
+
+      example:
+        INSERT
 
 
     digitalAddressesChanged:
@@ -506,7 +513,7 @@ components:
          digitalAddress: gianmaria.mora@pec.it,
          action: MODIFICA,
         }
-
+ 
  
     Error:
       required:

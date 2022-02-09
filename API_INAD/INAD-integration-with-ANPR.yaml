@@ -2,7 +2,7 @@ openapi: 3.0.1
 
 info:
   title: INAD-integration-with-ANPR
-  description: "API rese disponibili da INAD per **integrazione** con ANPR."
+  description: "API rese disponibili da INAD per integrazione con ANPR."
   version: 1.0.0
 
 servers:
@@ -318,7 +318,7 @@ paths:
       tags:
         - utility
 
-      description: Ricevi notifica l'evento di morte di un cittadino
+      description: Ricevi notifica di un'azione afferente l'elezione o modifica o cancellazione volantaria del domicilio digitale di un cittadino
 
       requestBody:
         description: Azione richiesta dal cittadino
@@ -362,13 +362,16 @@ components:
 
       example:
         MROGMR04A13A662X
-
-    digitalAddress: 
+    
+    email: 
       type: string
       pattern: ^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$
 
       example:
         gianmaria.mora@pec.it
+
+    digitalAddress:
+      $ref: '#/components/schemas/email'
 
     ack:
       type: string
@@ -480,9 +483,14 @@ components:
         ]
 
     citizenRequestNotification:
+
+      # TODO: aggiungere nome, cognome e email di contatto del cittadino obbligatoria per elezione
+
       required:
         - referenceDate
         - cf
+        - nome
+        - cognome
         - action
 
       type: object
@@ -494,9 +502,21 @@ components:
           format: date
 
         cf:
-          description: cittadino che ha richiesto l'azione
+          description: codice fiscale del cittadino che ha richiesto l'azione
           $ref: '#/components/schemas/cf'
 
+        name:
+          description: nome del cittadino che ha richiesto l'azione
+          type: string
+
+        cognome: 
+          description: cognome del cittadino che ha richiesto l'azione
+          type: string
+
+        emailContact:
+          description: email di contatto del cittadino che ha richiesto l'azione
+          $ref: '#/components/schemas/email'
+        
         digitalAddress:
           description: domicilio digitale eletto dal cittadino
           $ref: '#/components/schemas/digitalAddress'

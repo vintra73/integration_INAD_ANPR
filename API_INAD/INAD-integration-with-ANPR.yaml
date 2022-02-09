@@ -482,10 +482,7 @@ components:
           {INSERT, {RSSMRA93A01A001G,mario.rossi@pec.it}}        
         ]
 
-    citizenRequestNotification:
-
-      # TODO: aggiungere nome, cognome e email di contatto del cittadino obbligatoria per elezione
-
+    citizenRequestNotification:      
       required:
         - referenceDate
         - cf
